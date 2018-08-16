@@ -1,0 +1,19 @@
+main {
+  display: flex;
+  flex-wrap: wrap;
+  width: 60vw;
+  min-height: 60vh;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  margin-top: 30px;
+}
+
+section {
+  width: 30%;
+  min-height: 20vh;
+  border: 1px solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
