@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Board from './board'
+import Game from './game'
 
 class App extends Component {
   render() {
