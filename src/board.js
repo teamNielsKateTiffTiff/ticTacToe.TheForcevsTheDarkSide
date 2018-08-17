@@ -3,6 +3,8 @@ import './App.css';
 import './board.css'
 import Square from './square';
 import SelectPlayer from './selectPlayer'
+//import Sounds from './sounds';
+import starwarsthemesong from './sounds/starwarsthemesong.mp3';
 
 
 function calculateWinner(squares){ //Takes in squares array, and evalutes if winner, and who is winner.
@@ -35,10 +37,13 @@ class Board extends Component {
   constructor(props){
     super(props)
     this.state = {
+
       squares: Array(9).fill(null), //generate Array length 9 of null values.
       player1: {selected: false, icon: null, name: null}, //object to store player1 data
       player2: {selected: false, icon: null, name: null}, //object to store player2 data.
       is1stPlayer: true
+      sounds: [new Audio(starwarsthemesong)]
+
     };
   }
 
