@@ -1,108 +1,96 @@
 import React, { Component } from 'react';
-import Square from './square'
-import SelectPlayers from './selectPlayers'
+import './App.css';
 import './board.css'
-import bb8 from './bb8.png';
-import atat from './atat.png';
+import Square from './square';
+import SelectPlayer from './selectPlayer'
 
 
-
-function calculateWinner(squares){
-  const lines = [
-    [0,1,2],
-    [3,4,5],
-    [6,7,8],
-    [0,3,6],
-    [1,4,7],
-    [2,5,8],
-    [0,4,8],
-    [2,4,6],
-  ];
-  for (let i = 0; i < lines.length; i++){
-    const [a,b,c] = lines[i];
-    //create if statement that first determines if the first square in winning calculateWinner array, then compare that all the corresponding squares in that array sequence are the same value.
-      if (squares[a] && squares[a] === squares[b] && squares[a] === squares [c]){
-          //this is returning the winning value as the winner
-        return squares[a];
-
-      }
-
+function calculateWinner(squares){ //Takes in squares array, and evalutes if winner, and who is winner.
+  const lines = [ [0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6] ];
+  for(let i = 0; i < lines.length; i++){
+    const [a, b, c] = lines[i];
+    if(squares[a] && squares[a] === squares[b] && squares[a] === squares[c]){
+      return squares[a];
+    }
   }
-    return null;
-
-
+  return;
 }
-
 
 class Board extends Component {
   constructor(props){
     super(props)
     this.state = {
       squares: Array(9).fill(null),
-      player1: true,
-      //player2: false
+      player1: {selected: false, icon: null, name: null},
+      player2: {selected: false, icon: null, name: null},
+      gameStart: false,
+      is1stPlayer: true
     };
   }
 
-  playerSelect(value) {
-    console.log(value);
-    if (value === 'X') {
-      this.setState ({
-        player1: true
-      });
-    } else if (value === 'O') {
-      console.log(value);
-      this.setState ({
-        player1: false
-      });
+  squareClick = (i) => {
+    let { squares, player1, player2, is1stPlayer } = this.state;
+    if(!player1.selected || !player2.selected){
+      return
     }
-  }
-
-  onClick = (i) => {
-    let { player1, squares } = this.state;
-      if (calculateWinner(squares) || squares[i]){
+    if(calculateWinner(squares) || squares[i]){
       return;
     }
-      squares[i] = this.state.player1 ? bb8 : atat;
-      this.setState({
-      squares: squares,
-      player1: !this.state.player1
-    });
-
+    squares[i] = this.state.is1stPlayer ? "./img/"+player1.icon+".png" : "./img/"+player2.icon+".png";
+    this.setState({ squares: squares, is1stPlayer: !is1stPlayer })
   }
 
-  renderSquare(i){
-    let {val, player1, player2, squares} = this.state;
-    //console.log(squares);
-    return (
-      <Square value={this.state.squares[i]} onClick={() => this.onClick(i)} />
-    )
+  selectPlayer(obj){
+    let { id, value } = obj;
+    console.log("in boards.. ", id, value);
+    if(id === 'X'){
+      console.log("in id X... ");
+      this.setState({ player1: {selected: true, icon: value, name: value} })
+    }
+    if(id === 'O'){
+      console.log("in id O)... ");
+      this.setState({ player2: {selected: true, icon: value, name: value} })
+    }
+  }
+
+  reset(){
+    this.setState({
+      squares: Array(9).fill(null),
+      player1: {selected: false, icon: null, name: null},
+      player2: {selected: false, icon: null, name: null},
+      gameStart: false,
+      is1stPlayer: true
+    });
   }
 
   render() {
-    let {val, player1, player2, squares } = this.state;
-    let status;
+    console.log("STATE Boards: ", this.state);
+    let { squares, player1, player2, is1stPlayer } = this.state;
+    let status = "Please select players";
     const winner = calculateWinner(squares);
-      if (winner){
-        status = "Winner: " + (!this.state.player1 ? "BB-8" : "AT-AT");
-
+    if(player1.selected && player2.selected)
+      if(winner){
+        status = (!is1stPlayer ? player1.name : player2.name)+" Wins!";
       } else {
-          status = "Next Player: " + (this.state.player1 ? "BB-8" : "AT-AT");
-
+        status = (is1stPlayer ? player1.name : player2.name)+"'s Turn";
       }
-
+    let grid = squares.map((square, i) => {
+      return (
+        <Square key={i.toString()} val={squares[i]} squareClick={this.squareClick.bind(this, i)} />
+      );
+    })
     return (
-      <div>
-        <SelectPlayers playerSelect={this.playerSelect.bind(this)}/>
-        <div className="status">{status}</div>
-      <main>
-        {this.renderSquare(0)}{this.renderSquare(1)}{this.renderSquare(2)}
-        {this.renderSquare(3)}{this.renderSquare(4)}{this.renderSquare(5)}
-        {this.renderSquare(6)}{this.renderSquare(7)}{this.renderSquare(8)}
-      </main>
-    </div>
+      <div className="status">
+          {!this.state.isHidden && <SelectPlayer selectPlayer={this.selectPlayer.bind(this)}/>}
+          {!this.state.isHidden && status}
+        <main>
+          {grid}
+        </main>
+        <button onClick={this.reset.bind(this)}>Reset</button>
+      </div>
     );
   }
+
 }
 
 export default Board;

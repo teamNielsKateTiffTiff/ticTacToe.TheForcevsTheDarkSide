@@ -1,23 +1,15 @@
 import React, { Component } from 'react';
-//import './board.css'
+import './App.css';
+import './board.css'
 
 class Square extends Component {
-  // constructor(props){
-  //   super(props)
-  //   this.state = {
-  //     val: "",
-  //   };
-  // }
-
-  handleClick = () => {
-    this.props.onClick();
-  }
 
   render() {
-    let { value } = this.props;
+    let { val } = this.props;
+    console.log(val);
     return (
-      <section onClick={this.handleClick.bind(this)}>
-        <img width="100px" src={value} />
+      <section onClick={this.props.squareClick}>
+        <img width="50%" src={val} />
       </section>
     );
   }
