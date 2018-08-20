@@ -7,6 +7,7 @@ main {
   align-items: center;
   flex-wrap: wrap;
   margin: auto;
+  color: white;
 }
 
 section {
@@ -17,15 +18,18 @@ section {
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid black;
+  border: 3px solid white;
 }
 
 .status{
   font-family: BebasNeue;
   font-size: 2em;
+  color: white;
+  margin-top: 15px;
+  margin-bottom: 5px;
 }
 
 input {
   margin: 10px;
-  border: 1px solid black;
+  border: 3px solid white;
 }

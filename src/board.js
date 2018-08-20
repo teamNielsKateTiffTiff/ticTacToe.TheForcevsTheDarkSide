@@ -41,7 +41,7 @@ class Board extends Component {
       squares: Array(9).fill(null), //generate Array length 9 of null values.
       player1: {selected: false, icon: null, name: null}, //object to store player1 data
       player2: {selected: false, icon: null, name: null}, //object to store player2 data.
-      is1stPlayer: true
+      is1stPlayer: true,
       sounds: [new Audio(starwarsthemesong)]
 
     };
@@ -83,13 +83,15 @@ class Board extends Component {
   checkStatus(){
     let { squares, player1, player2, is1stPlayer } = this.state;
     //Declare status, winner, and isArrFull.
-    let status = "Please select players";
+    let status = "Select your side";
+    let sound = this.state.sounds[0];
     const winner = calculateWinner(squares);
     const arrFull = isArrFull(squares);
     // if both players have been selected... check status.
     if(player1.selected && player2.selected)
       if(winner){ //if winner - set status to current player name + wins
          status = (!is1stPlayer ? player1.name : player2.name)+" Wins!";
+         sound.play()
       } else { //set status to current player's turn
          status = (is1stPlayer ? player1.name : player2.name)+"'s Turn";
       }
@@ -112,6 +114,7 @@ class Board extends Component {
       is1stPlayer: true
     });
     this.refs.selectPlayer.reset();
+    this.state.sounds[0].pause()
   }
 
   render() {
@@ -126,13 +129,16 @@ class Board extends Component {
     })
     //isHidden flips to hide elements after selection
     return (
-      <div className="status">
-          {!isHidden && <SelectPlayer ref="selectPlayer" selectPlayer={this.selectPlayer.bind(this)}/>}
-          {!isHidden && status}
-        <main>
-          {grid}
-        </main>
-        <button onClick={this.reset.bind(this)}>Reset</button>
+      <div>
+        <div className="status">
+            {!isHidden && status}
+            {!isHidden && <SelectPlayer ref="selectPlayer" selectPlayer={this.selectPlayer.bind(this)}/>}
+            <button onClick={this.reset.bind(this)}>Reset</button>
+          <main>
+            {grid}
+          </main>
+
+        </div>
       </div>
     );
   }

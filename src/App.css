@@ -9,9 +9,12 @@
 
 .App-header {
   background-color: #222;
-  height: 150px;
+  background-image: url('starWarsTicTacToeHeader.jpg');
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 200px;
   padding: 20px;
-  margin-bottom: 30px;
+  /* margin: 25px; */
   color: white;
 }
 
@@ -29,3 +32,7 @@
 }
 
 @font-face { font-family: BebasNeue; src: url('BebasNeue-Regular.ttf'); }
+
+body {
+  background-image: url('galaxy.jpg');
+}
