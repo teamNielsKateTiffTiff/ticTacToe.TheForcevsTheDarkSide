@@ -106,8 +106,13 @@ class Board extends Component {
       player1: {selected: false, icon: null, name: null}, //object to store player1 data
       player2: {selected: false, icon: null, name: null}, //object to store player2 data.
       is1stPlayer: true,
+<<<<<<< HEAD
       sounds: [new Audio(starwarsthemesong)],
       ai: {on: false, firstMove: true}
+=======
+      sounds: [new Audio(starwarsthemesong)]
+
+>>>>>>> abd8ac0bdccbc8862de503b5aab5800e992c584b
     };
   }
 
@@ -156,13 +161,15 @@ class Board extends Component {
   checkStatus(){
     let { squares, player1, player2, is1stPlayer } = this.state;
     //Declare status, winner, and isArrFull.
-    let status = "Please select players";
+    let status = "Select your side";
+    let sound = this.state.sounds[0];
     const winner = calculateWinner(squares);
     const arrFull = isArrFull(squares);
     // if both players have been selected... check status.
     if(player1.selected && player2.selected)
       if(winner){ //if winner - set status to current player name + wins
          status = (!is1stPlayer ? player1.name : player2.name)+" Wins!";
+         sound.play()
       } else { //set status to current player's turn
          status = (is1stPlayer ? player1.name : player2.name)+"'s Turn";
       }
@@ -193,6 +200,7 @@ class Board extends Component {
       ai: {on: false, firstMove: true}
     });
     this.refs.selectPlayer.reset();
+    this.state.sounds[0].pause()
   }
 
   render() {
@@ -207,6 +215,7 @@ class Board extends Component {
     })
     //isHidden flips to hide elements after selection
     return (
+<<<<<<< HEAD
       <div className="status">
           {!isHidden && status}
           {!isHidden && <SelectPlayer ref="selectPlayer" selectPlayer={this.selectPlayer.bind(this)} aiStatus={this.aiStatus.bind(this)}/>}
@@ -214,6 +223,18 @@ class Board extends Component {
         <main>
           {grid}
         </main>
+=======
+      <div>
+        <div className="status">
+            {!isHidden && status}
+            {!isHidden && <SelectPlayer ref="selectPlayer" selectPlayer={this.selectPlayer.bind(this)}/>}
+            <button onClick={this.reset.bind(this)}>Reset</button>
+          <main>
+            {grid}
+          </main>
+
+        </div>
+>>>>>>> abd8ac0bdccbc8862de503b5aab5800e992c584b
       </div>
     );
   }

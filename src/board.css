@@ -7,26 +7,34 @@ main {
   align-items: center;
   flex-wrap: wrap;
   margin: auto;
+<<<<<<< HEAD
   margin-bottom: 50px;
+=======
+  color: white;
+>>>>>>> abd8ac0bdccbc8862de503b5aab5800e992c584b
 }
 
 section {
   font-size: 6em;
   font-family: BebasNeue;
-  width: 19vw;
-  height: 20vh;
+  min-width: 19vw;
+  min-height: 20vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid black;
+  border: 3px solid white;
+  background-color: rgba(255, 255, 255, 0.15);
 }
 
 .status{
   font-family: BebasNeue;
   font-size: 2em;
+  color: white;
+  margin-top: 15px;
+  margin-bottom: 5px;
 }
 
 input {
   margin: 10px;
-  border: 1px solid black;
+  border: 3px solid white;
 }
