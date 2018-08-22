@@ -13,12 +13,13 @@ main {
 section {
   font-size: 6em;
   font-family: BebasNeue;
-  width: 19vw;
-  height: 20vh;
+  min-width: 19vw;
+  min-height: 20vh;
   display: flex;
   justify-content: center;
   align-items: center;
   border: 3px solid white;
+  background-color: rgba(255, 255, 255, 0.15);
 }
 
 .status{
