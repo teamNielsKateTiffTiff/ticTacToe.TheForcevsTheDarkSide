@@ -8,12 +8,13 @@
 }
 
 .App-header {
-  background-color: #222;
+  background-color: #000;
   background-image: url('starWarsTicTacToeHeader.jpg');
   background-repeat: no-repeat;
   background-size: contain;
-  height: 200px;
-  padding: 20px;
+  background-position: center;
+  height: 10vh;
+  /* padding: 20px; */
   /* margin: 25px; */
   color: white;
 }

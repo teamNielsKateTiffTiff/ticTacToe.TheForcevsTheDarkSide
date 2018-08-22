@@ -1,12 +1,14 @@
 main {
   font-family: BebasNeue;
   width: 60vw;
+  max-width: 60vw;
   height: 60vh;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
   margin: auto;
+  margin-bottom: 50px;
   color: white;
 }
 
@@ -19,6 +21,7 @@ section {
   justify-content: center;
   align-items: center;
   border: 3px solid white;
+  background-color: rgba(255, 255, 255, 0.15);
 }
 
 .status{
