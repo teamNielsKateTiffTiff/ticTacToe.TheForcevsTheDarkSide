@@ -12,7 +12,8 @@ class SelectPlayer extends Component {
       isHidden2: false,
       light_side: [" ", "han solo", "luke skywalker", "leia organa", "chewbacca", "yoda", "admiral ackbar", "c3p0", "ewok", "lando calrissian", "obiwan kenobi", "qui gon jinn", "r2d2"],
       dark_side: [" ", "darth vader", "emperor palpatine", "boba fett", "greedo", "darth maul", "clone trooper", "jabba the hutt", "jango fett", "storm trooper"],
-      //aiOn: false
+      aiOn: false,
+      ai_ops: [" ", "On", "Off"]
     };
   }
 
@@ -65,12 +66,13 @@ class SelectPlayer extends Component {
         isHidden2: false,
         aiOn: false
     });
+    this.render();
   }
 
   render(){
     console.log("STATE SelectPlayer: ", this.state);
     //Assign all variables to be used.
-    let {player1, player2, isHidden, isHidden2, light_side, dark_side } = this.state;
+    let {player1, player2, isHidden, isHidden2, light_side, dark_side, ai_ops } = this.state;
     let player1icon;
     let player2icon;
     //Checks is players have value and creates the img path
@@ -89,12 +91,17 @@ class SelectPlayer extends Component {
         <option key={i.toString()} value={value}>{value.toUpperCase()}</option>
       )
     });
-    //generates the select options from array of characters. 
+    //generates the select options from array of characters.
     let options_ds = dark_side.map((value, i) => {
       //console.log(value, i);
       return (
         <option key={i.toString()} value={value}>{value.toUpperCase()}</option>
       )
+    });
+    let options_ai = ai_ops.map((value, i) => {
+      return (
+        <option key={i.toString()} value={value}>{value}</option>
+        )
     });
     return(
       <div>
@@ -112,9 +119,7 @@ class SelectPlayer extends Component {
       </form>}{isHidden2 && " VS " + player2.value + " "} {isHidden2&& <img width="5%" src={img2}/> }
       <form method="get" action="" onSubmit={this.selectPlayer1.bind(this)}>
         <label>AI: <select name="ai" onChange={this.handleAI.bind(this)}>
-          <option value=""></option>
-          <option value="On">On</option>
-          <option value="Off">Off</option>
+          {options_ai}
           </select></label>
       </form>
       </div>
