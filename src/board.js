@@ -3,9 +3,7 @@ import './App.css';
 import './board.css'
 import Square from './square';
 import SelectPlayer from './selectPlayer'
-//import Sounds from './sounds';
 import starwarsthemesong from './sounds/starwarsthemesong.mp3';
-
 
 function calculateWinner(squares){ //Takes in squares array, and evalutes if winner, and who is winner.
   //Win conditions:
@@ -33,6 +31,72 @@ function isArrFull(squares){ // Check if the arr of squares has no null values:
   return false;
 }
 
+//Function to check for optimal moves.
+function checkMoves(squares, player, ai){
+  //Declare an Array of possible choices.
+  const moves = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6] ];
+  for(let i = 0; i < moves.length; i++){
+    const [a,b,c] = moves[i];
+    //Checks for combinations of 2 AI and a null value. returns index of null.
+    if(squares[a] === ai && squares[b] === ai && !squares[c]){
+      return c;
+    }
+    if(squares[a] === ai && squares[c] === ai && !squares[b]){
+      return b;
+    }
+    if(squares[c] === ai && squares[b] === ai && !squares[a]){
+      return a;
+    }
+    //Check for combinations of 2 PLayers and a null value and return index of null
+    if(squares[a] === player && squares[b] === player && !squares[c]){
+      return c;
+    }
+    if(squares[a] === player && squares[c] === player && !squares[b]){
+      return b;
+    }
+    if(squares[b] === player && squares[c] === player && !squares[a]){
+      return a;
+    }
+  }
+  //if no conditions matches return false.
+  return false;
+}
+
+//Determines AI move
+function aiMove(squares, player, ai, p_last, firstMove){
+  // Declare null move value
+  let newMove = null;
+  //Check is this is the firstMove
+  if(firstMove){
+    //Checks if Player move is middle square
+    if(squares.indexOf(player) === 4){
+      //Assigns a random square that is not the middle.
+      while(newMove !== p_last){
+        newMove = Math.floor(Math.random()*(squares.length-1));
+        console.log(newMove);
+        return newMove;
+      }
+    }
+    //If player move is not the middle, AI move is the middle.
+    else{
+      newMove = 4;
+      return newMove;
+    }
+  }
+  //Check other move if not first move.
+  if(checkMoves(squares, player, ai)){
+    console.log("checking move")
+    return checkMoves(squares, player, ai);
+  } else { // If checkmove returns false, then loops array and assigns first null value as move.
+    console.log("no moves...");
+    for(let i = 0; i < squares.length; i++){
+      if(squares[i] === null){
+        return i;
+      }
+    }
+  }
+}
+
 class Board extends Component {
   constructor(props){
     super(props)
@@ -41,14 +105,14 @@ class Board extends Component {
       squares: Array(9).fill(null), //generate Array length 9 of null values.
       player1: {selected: false, icon: null, name: null}, //object to store player1 data
       player2: {selected: false, icon: null, name: null}, //object to store player2 data.
-      is1stPlayer: true
-      sounds: [new Audio(starwarsthemesong)]
-
+      is1stPlayer: true,
+      sounds: [new Audio(starwarsthemesong)],
+      ai: {on: false, firstMove: true}
     };
   }
 
   squareClick = (i) => {
-    let { squares, player1, player2, is1stPlayer } = this.state;
+    let { squares, player1, player2, is1stPlayer, ai } = this.state;
     //End and return nothing if both player are not selected.
     if(!player1.selected || !player2.selected){
       return
@@ -57,9 +121,18 @@ class Board extends Component {
     if(calculateWinner(squares) || squares[i]){
       return;
     }
-    //Assign value to
-    squares[i] = this.state.is1stPlayer ? player1.icon : player2.icon;
-    this.setState({ squares: squares, is1stPlayer: !is1stPlayer })
+      //Assign value to squares for player 1 and player 2 alternating.
+      if(!ai.on){
+        squares[i] = this.state.is1stPlayer ? player1.icon : player2.icon;
+        this.setState({ squares: squares, is1stPlayer: !is1stPlayer })
+      }
+      //If AI on, assigns value to squares for player1 and then AI
+      if(ai.on){
+        squares[i] = player1.icon;
+        let move = aiMove(squares, player1.icon, player2.icon, i, ai.firstMove);
+        squares[move] = player2.icon;
+        this.setState({ squares: squares, ai: {on: true, firstMove: false } });
+      }
   }
 
   selectPlayer(obj){
@@ -104,12 +177,20 @@ class Board extends Component {
       return status;
   }
 
+  //Sets state of ai to true of false
+  aiStatus(status){
+    console.log(status);
+    this.setState({ai: {on: status, firstMove: this.state.ai.firstMove}});
+    console.log("STATE: BOARDS", this.state);
+  }
+
   reset(){ //set state back to start, and call reset on child component.
     this.setState({
       squares: Array(9).fill(null),
       player1: {selected: false, icon: null, name: null},
       player2: {selected: false, icon: null, name: null},
-      is1stPlayer: true
+      is1stPlayer: true,
+      ai: {on: false, firstMove: true}
     });
     this.refs.selectPlayer.reset();
   }
@@ -127,12 +208,12 @@ class Board extends Component {
     //isHidden flips to hide elements after selection
     return (
       <div className="status">
-          {!isHidden && <SelectPlayer ref="selectPlayer" selectPlayer={this.selectPlayer.bind(this)}/>}
           {!isHidden && status}
+          {!isHidden && <SelectPlayer ref="selectPlayer" selectPlayer={this.selectPlayer.bind(this)} aiStatus={this.aiStatus.bind(this)}/>}
+          <button onClick={this.reset.bind(this)}>Reset</button>
         <main>
           {grid}
         </main>
-        <button onClick={this.reset.bind(this)}>Reset</button>
       </div>
     );
   }

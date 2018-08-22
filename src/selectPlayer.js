@@ -10,8 +10,9 @@ class SelectPlayer extends Component {
       player2: {id: null, name: null, value: null},
       isHidden: false,
       isHidden2: false,
-      light_side: [" ", "han solo", "luke skywalker", "leia organa", "chewbacca", "yoda"],
-      dark_side: [" ", "darth vader", "emperor palpatine", "boba fett", "greedo", "darth maul"]
+      light_side: [" ", "han solo", "luke skywalker", "leia organa", "chewbacca", "yoda", "admiral ackbar", "c3p0", "ewok", "lando calrissian", "obiwan kenobi", "qui gon jinn", "r2d2"],
+      dark_side: [" ", "darth vader", "emperor palpatine", "boba fett", "greedo", "darth maul", "clone trooper", "jabba the hutt", "jango fett", "storm trooper"],
+      //aiOn: false
     };
   }
 
@@ -33,7 +34,7 @@ class SelectPlayer extends Component {
 
   handleChange(e){
     let {id, name, value} = e.target
-    console.log("in player select.. ", id, name, value);
+    //console.log("in player select.. ", id, name, value);
     if(id === "X"){
       this.setState({ player1: {id: id, name: name, value: value} });
     }
@@ -42,20 +43,37 @@ class SelectPlayer extends Component {
     }
   }
 
+  handleAI(e){
+    let { value } = e.target;
+    console.log(value);
+    //Returns true or false to aiStatus in boardJS
+    if(value !== ""){
+      if(value === "On"){
+        this.props.aiStatus(true);
+      }
+      if(value === "Off"){
+        this.props.aiStatus(false);
+      }
+    }
+  }
+
   reset(){
     this.setState({
         player1: {id: null, name: null, value: null},
         player2: {id: null, name: null, value: null},
         isHidden: false,
-        isHidden2: false
+        isHidden2: false,
+        aiOn: false
     });
   }
 
   render(){
     console.log("STATE SelectPlayer: ", this.state);
+    //Assign all variables to be used.
     let {player1, player2, isHidden, isHidden2, light_side, dark_side } = this.state;
     let player1icon;
     let player2icon;
+    //Checks is players have value and creates the img path
     if(player1.value){
       player1icon = player1.value.split(" ").join("-");
     }
@@ -64,14 +82,16 @@ class SelectPlayer extends Component {
     }
     let img1 = "./img/"+player1icon+".png";
     let img2 = "./img/"+player2icon+".png"
+    //generates the select options from array of characters.
     let options_ls = light_side.map((value, i) => {
-      console.log(value, i);
+      //console.log(value, i);
       return (
         <option key={i.toString()} value={value}>{value.toUpperCase()}</option>
       )
     });
+    //generates the select options from array of characters. 
     let options_ds = dark_side.map((value, i) => {
-      console.log(value, i);
+      //console.log(value, i);
       return (
         <option key={i.toString()} value={value}>{value.toUpperCase()}</option>
       )
@@ -90,6 +110,13 @@ class SelectPlayer extends Component {
           </select></label>
         <input type="submit" value="Select" />
       </form>}{isHidden2 && " VS " + player2.value + " "} {isHidden2&& <img width="5%" src={img2}/> }
+      <form method="get" action="" onSubmit={this.selectPlayer1.bind(this)}>
+        <label>AI: <select name="ai" onChange={this.handleAI.bind(this)}>
+          <option value=""></option>
+          <option value="On">On</option>
+          <option value="Off">Off</option>
+          </select></label>
+      </form>
       </div>
     );
   }
