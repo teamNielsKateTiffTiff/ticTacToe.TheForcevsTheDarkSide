@@ -3,12 +3,16 @@ import './App.css';
 import './board.css'
 import Square from './square';
 import SelectPlayer from './selectPlayer'
+//import Sounds from './sounds';
+import starwarsthemesong from './sounds/starwarsthemesong.mp3';
 
 
 function calculateWinner(squares){ //Takes in squares array, and evalutes if winner, and who is winner.
+  //Win conditions:
   const lines = [ [0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6] ];
   for(let i = 0; i < lines.length; i++){
     const [a, b, c] = lines[i];
+    //Check square array against win condition.
     if(squares[a] && squares[a] === squares[b] && squares[a] === squares[c]){
       return squares[a];
     }
@@ -16,77 +20,125 @@ function calculateWinner(squares){ //Takes in squares array, and evalutes if win
   return;
 }
 
+function isArrFull(squares){ // Check if the arr of squares has no null values:
+  let checkNotNull = [];
+  for(let i = 0; i < squares.length; i++){
+    if(squares[i] !== null){
+      checkNotNull.push(squares[i]);
+    }
+  }
+  if(checkNotNull.length === squares.length){
+    return true;
+  }
+  return false;
+}
+
 class Board extends Component {
   constructor(props){
     super(props)
     this.state = {
-      squares: Array(9).fill(null),
-      player1: {selected: false, icon: null, name: null},
-      player2: {selected: false, icon: null, name: null},
-      gameStart: false,
-      is1stPlayer: true
+
+      squares: Array(9).fill(null), //generate Array length 9 of null values.
+      player1: {selected: false, icon: null, name: null}, //object to store player1 data
+      player2: {selected: false, icon: null, name: null}, //object to store player2 data.
+      is1stPlayer: true,
+      sounds: [new Audio(starwarsthemesong)]
+
     };
   }
 
   squareClick = (i) => {
     let { squares, player1, player2, is1stPlayer } = this.state;
+    //End and return nothing if both player are not selected.
     if(!player1.selected || !player2.selected){
       return
     }
+    //End and return nothing if a player has won, or current square has value
     if(calculateWinner(squares) || squares[i]){
       return;
     }
-    squares[i] = this.state.is1stPlayer ? "./img/"+player1.icon+".png" : "./img/"+player2.icon+".png";
+    //Assign value to
+    squares[i] = this.state.is1stPlayer ? player1.icon : player2.icon;
     this.setState({ squares: squares, is1stPlayer: !is1stPlayer })
   }
 
   selectPlayer(obj){
     let { id, value } = obj;
-    console.log("in boards.. ", id, value);
+    //split value of name, and add '-'
+    let icon = value.split(" ").join("-");
+    //create img icon path.
+    let img = "./img/"+icon+".png";
+    console.log("in boards.. ", id, value, icon);
+    //setState for players.
     if(id === 'X'){
       console.log("in id X... ");
-      this.setState({ player1: {selected: true, icon: value, name: value} })
+      this.setState({ player1: {selected: true, icon: img, name: value} })
     }
     if(id === 'O'){
       console.log("in id O)... ");
-      this.setState({ player2: {selected: true, icon: value, name: value} })
+      this.setState({ player2: {selected: true, icon: img, name: value} })
     }
   }
 
-  reset(){
+  checkStatus(){
+    let { squares, player1, player2, is1stPlayer } = this.state;
+    //Declare status, winner, and isArrFull.
+    let status = "Select your side";
+    let sound = this.state.sounds[0];
+    const winner = calculateWinner(squares);
+    const arrFull = isArrFull(squares);
+    // if both players have been selected... check status.
+    if(player1.selected && player2.selected)
+      if(winner){ //if winner - set status to current player name + wins
+         status = (!is1stPlayer ? player1.name : player2.name)+" Wins!";
+         sound.play()
+      } else { //set status to current player's turn
+         status = (is1stPlayer ? player1.name : player2.name)+"'s Turn";
+      }
+      if(arrFull && !winner){ //Check if array of squares is full, and no winner exists..
+        //check if Han and Greedo are playing.
+        if(player1.name === "han solo" && player2.name === "greedo"){
+           status = "Game is tied, but Han shot first!"
+        } else {
+           status = "Game is tied"
+        }
+      }
+      return status;
+  }
+
+  reset(){ //set state back to start, and call reset on child component.
     this.setState({
       squares: Array(9).fill(null),
       player1: {selected: false, icon: null, name: null},
       player2: {selected: false, icon: null, name: null},
-      gameStart: false,
       is1stPlayer: true
     });
+    this.refs.selectPlayer.reset();
+    this.state.sounds[0].pause()
   }
 
   render() {
     console.log("STATE Boards: ", this.state);
-    let { squares, player1, player2, is1stPlayer } = this.state;
-    let status = "Please select players";
-    const winner = calculateWinner(squares);
-    if(player1.selected && player2.selected)
-      if(winner){
-        status = (!is1stPlayer ? player1.name : player2.name)+" Wins!";
-      } else {
-        status = (is1stPlayer ? player1.name : player2.name)+"'s Turn";
-      }
+    let { squares, player1, player2, is1stPlayer, isHidden } = this.state;
+    let status = this.checkStatus();
+    //create grid of Square child elements
     let grid = squares.map((square, i) => {
       return (
         <Square key={i.toString()} val={squares[i]} squareClick={this.squareClick.bind(this, i)} />
       );
     })
+    //isHidden flips to hide elements after selection
     return (
-      <div className="status">
-          {!this.state.isHidden && <SelectPlayer selectPlayer={this.selectPlayer.bind(this)}/>}
-          {!this.state.isHidden && status}
-        <main>
-          {grid}
-        </main>
-        <button onClick={this.reset.bind(this)}>Reset</button>
+      <div>
+        <div className="status">
+            {!isHidden && status}
+            {!isHidden && <SelectPlayer ref="selectPlayer" selectPlayer={this.selectPlayer.bind(this)}/>}
+            <button onClick={this.reset.bind(this)}>Reset</button>
+          <main>
+            {grid}
+          </main>
+
+        </div>
       </div>
     );
   }
