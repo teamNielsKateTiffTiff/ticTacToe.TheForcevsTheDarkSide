@@ -106,13 +106,8 @@ class Board extends Component {
       player1: {selected: false, icon: null, name: null}, //object to store player1 data
       player2: {selected: false, icon: null, name: null}, //object to store player2 data.
       is1stPlayer: true,
-<<<<<<< HEAD
       sounds: [new Audio(starwarsthemesong)],
       ai: {on: false, firstMove: true}
-=======
-      sounds: [new Audio(starwarsthemesong)]
-
->>>>>>> abd8ac0bdccbc8862de503b5aab5800e992c584b
     };
   }
 
@@ -215,7 +210,6 @@ class Board extends Component {
     })
     //isHidden flips to hide elements after selection
     return (
-<<<<<<< HEAD
       <div className="status">
           {!isHidden && status}
           {!isHidden && <SelectPlayer ref="selectPlayer" selectPlayer={this.selectPlayer.bind(this)} aiStatus={this.aiStatus.bind(this)}/>}
@@ -223,18 +217,6 @@ class Board extends Component {
         <main>
           {grid}
         </main>
-=======
-      <div>
-        <div className="status">
-            {!isHidden && status}
-            {!isHidden && <SelectPlayer ref="selectPlayer" selectPlayer={this.selectPlayer.bind(this)}/>}
-            <button onClick={this.reset.bind(this)}>Reset</button>
-          <main>
-            {grid}
-          </main>
-
-        </div>
->>>>>>> abd8ac0bdccbc8862de503b5aab5800e992c584b
       </div>
     );
   }
