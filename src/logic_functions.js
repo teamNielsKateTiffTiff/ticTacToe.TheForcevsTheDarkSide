@@ -11,7 +11,8 @@ export const calculateWinner = (squares) => { //Takes in squares array, and eval
   return;
 }
 
-export const isArrFull = (squares) => { // Check if the arr of squares has no null values:
+// Check if the arr of squares has no null values:
+export const isArrFull = (squares) => {
   let checkNotNull = [];
   for(let i = 0; i < squares.length; i++){
     if(squares[i] !== null){
@@ -70,10 +71,13 @@ export const checkMoves = (squares, player, ai) => {
     return moves[0].idx;
   } else { //Edge case where no matches, array is empty
     console.log("no moves...");
+    //Assign array of emptySpaces using emptySpaces function
     let emptySpots = emptySpaces(squares);
+    //Edge case if only 1 space left
     if (emptySpots.length === 1){
       return emptySpots[0];
     }
+    //pick random space from remaining spaces.
     let newMove = Math.floor(Math.random()*(emptySpots.length-1));
     console.log(emptySpots[newMove]);
     return emptySpots[newMove];
@@ -85,18 +89,19 @@ export const aiMove = (squares, player, ai, p_last, firstMove) => {
   console.log("AIMOVE");
   // Declare null move value
   let newMove = null;
-  //Check is this is the firstMove
+  //Check if this is the firstMove
   if(firstMove){
     //Checks if Player move is middle square
     if(squares.indexOf(player) === 4){
       // array of best moves
       let moves = [0,2,6,8];
-      while(!moves.includes(newMove)){
+      //pick random number while it matches the moves array
+      do {
         console.log("in while loop");
         newMove = Math.floor(Math.random()*(squares.length-1));
         console.log(newMove);
-        return newMove;
-      }
+      } while(!moves.includes(newMove));
+      return newMove;
     }
     //If player move is not the middle, AI move is the middle.
     else {
