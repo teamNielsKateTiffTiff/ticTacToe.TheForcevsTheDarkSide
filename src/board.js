@@ -4,11 +4,12 @@ import './board.css'
 import Square from './square';
 import SelectPlayer from './selectPlayer'
 import starwarsthemesong from './sounds/starwarsthemesong.mp3';
-//import vaderbreathing from './sounds/vaderbreathing.mp3';
 import imperialmarch from './sounds/imperialmarch.mp3';
 import yodalaughing from './sounds/yodalaughing.mp3';
+import lightsaberon from './sounds/lightsaberon.mp3';
+import laserblast from './sounds/laserblast.mp3';
+import laserblaster from './sounds/laserblaster.mp3';
 import {calculateWinner} from './logic_functions.js';
-//import {checkMoves} from './logic_functions.js';
 import {isArrFull} from './logic_functions.js';
 import {aiMove} from './logic_functions.js';
 
@@ -23,6 +24,7 @@ class Board extends Component {
       player2: {selected: false, icon: null, name: null}, //object to store player2 data.
       is1stPlayer: true, //Bool to check which player is current player
       sounds: [new Audio(starwarsthemesong), new Audio(imperialmarch), new Audio(yodalaughing)],
+      effects: [new Audio(lightsaberon), new Audio(laserblast), new Audio(laserblaster)],
       ai: {on: false, firstMove: true} //AI object for ai on off and if it is firstMove
     };
   }
@@ -40,11 +42,14 @@ class Board extends Component {
     //If AI OFF: Assign value to squares for player 1 and player 2 alternating.
     if(!ai.on){
       squares[i] = this.state.is1stPlayer ? player1.icon : player2.icon;
+      let sound = (!is1stPlayer ? this.state.effects[1] : this.state.effects[2]);
+      sound.play()
       this.setState({ squares: squares, is1stPlayer: !is1stPlayer })
     }
     //If AI ON, assigns value to squares for player1 and then runs aiMove
     if(ai.on){
       squares[i] = player1.icon;
+      this.state.effects[1].play()
       this.setState({squares: squares, is1stPlayer: false});
       this.aiMove(i);
     }
@@ -58,8 +63,9 @@ class Board extends Component {
       // this.setState({ squares: squares, ai: {on: true, firstMove: false }, is1stPlayer: true });
       setTimeout(() => {
         squares[move] = player2.icon;
+        this.state.effects[2].play()
         this.setState({ squares: squares, ai: {on: true, firstMove: false }, is1stPlayer: true });
-      }, 200);
+      }, 300);
     }
   }
 
@@ -74,10 +80,12 @@ class Board extends Component {
     //setState for players.
     if(id === 'X'){
       console.log("in id X... ");
+      this.state.effects[0].play()
       this.setState({ player1: {selected: true, icon: img, name: value} })
     }
     if(id === 'O'){
       console.log("in id O)... ");
+      this.state.effects[0].play()
       this.setState({ player2: {selected: true, icon: img, name: value} })
     }
   }
@@ -103,11 +111,11 @@ class Board extends Component {
         if(player1.name === "han solo" && player2.name === "greedo"){
            status = "Game is tied, but Han shot first!"
            let sound = this.state.sounds[2]
-           sound.play()
+           setTimeout(()=> {sound.play();}, 150);
         } else {
            status = "Game is tied"
            let sound = this.state.sounds[2]
-           sound.play()
+           setTimeout(()=> {sound.play();}, 150);
         }
       }
       return status;
@@ -116,6 +124,7 @@ class Board extends Component {
   //Sets state of ai to true of false
   aiStatus(status){
     console.log(status);
+    this.state.effects[0].play()
     this.setState({ai: {on: status, firstMove: this.state.ai.firstMove}});
     console.log("STATE: BOARDS", this.state);
   }
