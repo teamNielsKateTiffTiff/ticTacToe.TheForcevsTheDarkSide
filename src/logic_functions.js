@@ -34,29 +34,28 @@ export const checkMoves = (squares, player, ai) => {
   for(let i = 0; i < checks.length; i++){
     const [a,b,c] = checks[i];
     //Checks for combinations of 2 AI values and a null value and pushes index of null.
-    if(squares[a] === ai && squares[b] === ai && !squares[c]){
-      moves.push({idx: c, score: 1});
+    if(squares[a] && squares[a] === squares[b] && !squares[c]){
+      squares[a] === ai ? moves.push({idx: c, score: 1}) : moves.push({idx: c, score: 0});
     }
-    if(squares[a] === ai && squares[c] === ai && !squares[b]){
-      moves.push({idx: b, score: 1});
+    if(squares[a] && squares[a] === squares[c] && !squares[b]){
+      squares[a] === ai ? moves.push({idx: b, score: 1}) : moves.push({idx: b, score: 0});
     }
-    if(squares[c] === ai && squares[b] === ai && !squares[a]){
-      moves.push({idx: a, score: 1});
+    if(squares[b] && squares[b] === squares[c] && !squares[a]){
+      squares[b] === ai ? moves.push({idx: a, score: 1}) : moves.push({idx: a, score: 0});
     }
-    //Check for combinations of 2 player values and a null value and pushes index of null
-    if(squares[a] === player && squares[b] === player && !squares[c]){
-      moves.push({idx: c, score: 0});
-    }
-    if(squares[a] === player && squares[c] === player && !squares[b]){
-      moves.push({idx: b, score: 0});
-    }
-    if(squares[b] === player && squares[c] === player && !squares[a]){
-      moves.push({idx: a, score: 0});
-    }
+    // if(squares[a] && !squares[b] && !squares[c]){
+    //   squares[a] === ai ? moves.push({idx: c, score: -1}) : moves.push({idx: c, score: -2});
+    // }
+    // if(squares[a] && !squares[c] && !squares[b]){
+    //   squares[a] === ai ? moves.push({idx: b, score: -1}) : moves.push({idx: b, score: -2});
+    // }
+    // if(squares[b] && !squares[c] && !squares[a]){
+    //   squares[b] === ai ? moves.push({idx: a, score: -1}) : moves.push({idx: a, score: -2});
+    // }
   }
   console.log(moves);
   // Checks if there are moves
-  if(moves.length > 0){
+  if(moves.length > 1){
     console.log("There are moves.. ", moves);
     // LOOP moves to find first move with score of 1
     for(let i = 0; i < moves.length; i++){
@@ -78,6 +77,7 @@ export const checkMoves = (squares, player, ai) => {
       return emptySpots[0];
     }
     //pick random space from remaining spaces.
+    //if(emptySpots.includes())
     let newMove = Math.floor(Math.random()*(emptySpots.length-1));
     console.log(emptySpots[newMove]);
     return emptySpots[newMove];
@@ -107,6 +107,14 @@ export const aiMove = (squares, player, ai, p_last, firstMove) => {
     else {
       newMove = 4;
       return newMove;
+      //pick random number while it matches the moves array
+    //   let moves = [1,3,4,5,7];
+    //   do {
+    //     console.log("in while loop 2");
+    //     newMove = Math.floor(Math.random()*(squares.length-1));
+    //     console.log(newMove);
+    //   } while(!moves.includes(newMove) || squares[newMove] === player);
+    //   return newMove;
     }
   }
   //call checkMoves for other moves if not first move.
@@ -123,6 +131,26 @@ export const emptySpaces = (squares) => {
   }
   return emptySpaces;
 };
+
+// if(squares[a] === ai && squares[b] === ai && !squares[c]){
+//   moves.push({idx: c, score: 1});
+// }
+// if(squares[a] === ai && squares[c] === ai && !squares[b]){
+//   moves.push({idx: b, score: 1});
+// }
+// if(squares[c] === ai && squares[b] === ai && !squares[a]){
+//   moves.push({idx: a, score: 1});
+// }
+// //Check for combinations of 2 player values and a null value and pushes index of null
+// if(squares[a] === player && squares[b] === player && !squares[c]){
+//   moves.push({idx: c, score: 0});
+// }
+// if(squares[a] === player && squares[c] === player && !squares[b]){
+//   moves.push({idx: b, score: 0});
+// }
+// if(squares[b] === player && squares[c] === player && !squares[a]){
+//   moves.push({idx: a, score: 0});
+// }
 
 
 //Assigns a random square that is not the middle. NOTE - keep for easier AI with random moves.

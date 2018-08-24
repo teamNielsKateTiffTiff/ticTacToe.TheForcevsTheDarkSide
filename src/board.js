@@ -175,9 +175,11 @@ class Board extends Component {
           <span><button onClick={this.resetBoard.bind(this)}> Reset Board </button>
           <button onClick={this.resetPlayers.bind(this)}> Reset Players </button>
           <button onClick={this.resetAI.bind(this)}> Reset AI </button></span>
-        <main>
-          {grid}
-        </main>
+        <div className="container">
+          <main>
+            {grid}
+          </main>
+        </div>
       </div>
     );
   }

@@ -9,7 +9,7 @@ class Square extends Component {
     //console.log(val);
     return (
       <section onClick={this.props.squareClick}>
-        <img width="50%" src={val} alt=""/>
+        <img className="icons" src={val} alt=""/>
       </section>
     );
   }
