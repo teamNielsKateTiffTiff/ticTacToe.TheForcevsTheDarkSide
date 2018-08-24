@@ -13,7 +13,8 @@ class SelectPlayer extends Component {
       light_side: [" ", "han solo", "luke skywalker", "leia organa", "chewbacca", "yoda", "admiral ackbar", "c3p0", "ewok", "lando calrissian", "obiwan kenobi", "qui gon jinn", "r2d2"],
       dark_side: [" ", "darth vader", "emperor palpatine", "boba fett", "greedo", "darth maul", "clone trooper", "jabba the hutt", "jango fett", "storm trooper"],
       aiOn: false,
-      ai_ops: [" ", "On", "Off"]
+      ai_ops: [" ", "On", "Off"],
+      aiHidden: false
     };
   }
 
@@ -51,9 +52,11 @@ class SelectPlayer extends Component {
     if(value !== ""){
       if(value === "On"){
         this.props.aiStatus(true);
+        this.setState({aiOn: true, aiHidden: !this.state.aiHidden});
       }
       if(value === "Off"){
         this.props.aiStatus(false);
+        this.setState({aiOn: false, aiHidden: !this.state.aiHidden});
       }
     }
   }
@@ -64,15 +67,15 @@ class SelectPlayer extends Component {
         player2: {id: null, name: null, value: null},
         isHidden: false,
         isHidden2: false,
-        aiOn: false
+        aiHidden: false
     });
-    this.render();
+    //this.render();
   }
 
   render(){
     console.log("STATE SelectPlayer: ", this.state);
     //Assign all variables to be used.
-    let {player1, player2, isHidden, isHidden2, light_side, dark_side, ai_ops } = this.state;
+    let {player1, player2, isHidden, isHidden2, light_side, dark_side, ai_ops, aiHidden, aiOn } = this.state;
     let player1icon;
     let player2icon;
     //Checks is players have value and creates the img path
@@ -117,11 +120,11 @@ class SelectPlayer extends Component {
           </select></label>
         <input type="submit" value="Select" />
       </form>}{isHidden2 && " VS " + player2.value + " "} {isHidden2&& <img width="5%" src={img2}/> }
-      <form method="get" action="" onSubmit={this.selectPlayer1.bind(this)}>
+      {!aiHidden && <form method="get" action="">
         <label>AI: <select name="ai" onChange={this.handleAI.bind(this)}>
           {options_ai}
           </select></label>
-      </form>
+      </form>}{!aiHidden || (aiOn ? "  AI: ON" : "  AI: OFF") }
       </div>
     );
   }

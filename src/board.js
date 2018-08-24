@@ -4,98 +4,11 @@ import './board.css'
 import Square from './square';
 import SelectPlayer from './selectPlayer'
 import starwarsthemesong from './sounds/starwarsthemesong.mp3';
+import {calculateWinner} from './logic_functions.js';
+import {checkMoves} from './logic_functions.js';
+import {isArrFull} from './logic_functions.js';
+import {aiMove} from './logic_functions.js';
 
-function calculateWinner(squares){ //Takes in squares array, and evalutes if winner, and who is winner.
-  //Win conditions:
-  const lines = [ [0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6] ];
-  for(let i = 0; i < lines.length; i++){
-    const [a, b, c] = lines[i];
-    //Check square array against win condition.
-    if(squares[a] && squares[a] === squares[b] && squares[a] === squares[c]){
-      return squares[a];
-    }
-  }
-  return;
-}
-
-function isArrFull(squares){ // Check if the arr of squares has no null values:
-  let checkNotNull = [];
-  for(let i = 0; i < squares.length; i++){
-    if(squares[i] !== null){
-      checkNotNull.push(squares[i]);
-    }
-  }
-  if(checkNotNull.length === squares.length){
-    return true;
-  }
-  return false;
-}
-
-//Function to check for optimal moves.
-function checkMoves(squares, player, ai){
-  //Declare an Array of possible choices.
-  const moves = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6] ];
-  for(let i = 0; i < moves.length; i++){
-    const [a,b,c] = moves[i];
-    //Checks for combinations of 2 AI and a null value. returns index of null.
-    if(squares[a] === ai && squares[b] === ai && !squares[c]){
-      return c;
-    }
-    if(squares[a] === ai && squares[c] === ai && !squares[b]){
-      return b;
-    }
-    if(squares[c] === ai && squares[b] === ai && !squares[a]){
-      return a;
-    }
-    //Check for combinations of 2 PLayers and a null value and return index of null
-    if(squares[a] === player && squares[b] === player && !squares[c]){
-      return c;
-    }
-    if(squares[a] === player && squares[c] === player && !squares[b]){
-      return b;
-    }
-    if(squares[b] === player && squares[c] === player && !squares[a]){
-      return a;
-    }
-  }
-  //if no conditions matches return false.
-  return false;
-}
-
-//Determines AI move
-function aiMove(squares, player, ai, p_last, firstMove){
-  // Declare null move value
-  let newMove = null;
-  //Check is this is the firstMove
-  if(firstMove){
-    //Checks if Player move is middle square
-    if(squares.indexOf(player) === 4){
-      //Assigns a random square that is not the middle.
-      while(newMove !== p_last){
-        newMove = Math.floor(Math.random()*(squares.length-1));
-        console.log(newMove);
-        return newMove;
-      }
-    }
-    //If player move is not the middle, AI move is the middle.
-    else{
-      newMove = 4;
-      return newMove;
-    }
-  }
-  //Check other move if not first move.
-  if(checkMoves(squares, player, ai)){
-    console.log("checking move")
-    return checkMoves(squares, player, ai);
-  } else { // If checkmove returns false, then loops array and assigns first null value as move.
-    console.log("no moves...");
-    for(let i = 0; i < squares.length; i++){
-      if(squares[i] === null){
-        return i;
-      }
-    }
-  }
-}
 
 class Board extends Component {
   constructor(props){
@@ -129,10 +42,23 @@ class Board extends Component {
       //If AI on, assigns value to squares for player1 and then AI
       if(ai.on){
         squares[i] = player1.icon;
-        let move = aiMove(squares, player1.icon, player2.icon, i, ai.firstMove);
-        squares[move] = player2.icon;
-        this.setState({ squares: squares, ai: {on: true, firstMove: false } });
+        this.setState({squares: squares, is1stPlayer: false});
+        setTimeout(this.aiMove(i), 5000);
+        // let move = aiMove(squares, player1.icon, player2.icon, i, ai.firstMove);
+        // squares[move] = player2.icon;
+        // if(!calculateWinner(squares)){
+        //   this.setState({ squares: squares, ai: {on: true, firstMove: false }, is1stPlayer: true });
+        // }
       }
+  }
+
+  aiMove(i){
+    let { squares, player1, player2, is1stPlayer, ai } = this.state;
+    let move = aiMove(squares, player1.icon, player2.icon, i, ai.firstMove);
+    if(!calculateWinner(squares)){
+      squares[move] = player2.icon;
+      this.setState({ squares: squares, ai: {on: true, firstMove: false }, is1stPlayer: true });
+    }
   }
 
   selectPlayer(obj){
