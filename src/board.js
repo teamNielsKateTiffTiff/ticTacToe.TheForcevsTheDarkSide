@@ -4,8 +4,11 @@ import './board.css'
 import Square from './square';
 import SelectPlayer from './selectPlayer'
 import starwarsthemesong from './sounds/starwarsthemesong.mp3';
+//import vaderbreathing from './sounds/vaderbreathing.mp3';
+import imperialmarch from './sounds/imperialmarch.mp3';
+import yodalaughing from './sounds/yodalaughing.mp3';
 import {calculateWinner} from './logic_functions.js';
-import {checkMoves} from './logic_functions.js';
+//import {checkMoves} from './logic_functions.js';
 import {isArrFull} from './logic_functions.js';
 import {aiMove} from './logic_functions.js';
 
@@ -18,9 +21,9 @@ class Board extends Component {
       squares: Array(9).fill(null), //generate Array length 9 of null values.
       player1: {selected: false, icon: null, name: null}, //object to store player1 data
       player2: {selected: false, icon: null, name: null}, //object to store player2 data.
-      is1stPlayer: true,
-      sounds: [new Audio(starwarsthemesong)],
-      ai: {on: false, firstMove: true}
+      is1stPlayer: true, //Bool to check which player is current player
+      sounds: [new Audio(starwarsthemesong), new Audio(imperialmarch), new Audio(yodalaughing)],
+      ai: {on: false, firstMove: true} //AI object for ai on off and if it is firstMove
     };
   }
 
@@ -34,33 +37,33 @@ class Board extends Component {
     if(calculateWinner(squares) || squares[i]){
       return;
     }
-      //Assign value to squares for player 1 and player 2 alternating.
-      if(!ai.on){
-        squares[i] = this.state.is1stPlayer ? player1.icon : player2.icon;
-        this.setState({ squares: squares, is1stPlayer: !is1stPlayer })
-      }
-      //If AI on, assigns value to squares for player1 and then AI
-      if(ai.on){
-        squares[i] = player1.icon;
-        this.setState({squares: squares, is1stPlayer: false});
-        setTimeout(this.aiMove(i), 5000);
-        // let move = aiMove(squares, player1.icon, player2.icon, i, ai.firstMove);
-        // squares[move] = player2.icon;
-        // if(!calculateWinner(squares)){
-        //   this.setState({ squares: squares, ai: {on: true, firstMove: false }, is1stPlayer: true });
-        // }
-      }
-  }
-
-  aiMove(i){
-    let { squares, player1, player2, is1stPlayer, ai } = this.state;
-    let move = aiMove(squares, player1.icon, player2.icon, i, ai.firstMove);
-    if(!calculateWinner(squares)){
-      squares[move] = player2.icon;
-      this.setState({ squares: squares, ai: {on: true, firstMove: false }, is1stPlayer: true });
+    //If AI OFF: Assign value to squares for player 1 and player 2 alternating.
+    if(!ai.on){
+      squares[i] = this.state.is1stPlayer ? player1.icon : player2.icon;
+      this.setState({ squares: squares, is1stPlayer: !is1stPlayer })
+    }
+    //If AI ON, assigns value to squares for player1 and then runs aiMove
+    if(ai.on){
+      squares[i] = player1.icon;
+      this.setState({squares: squares, is1stPlayer: false});
+      this.aiMove(i);
     }
   }
 
+  aiMove(i){
+    let { squares, player1, player2, ai } = this.state;
+    let move = aiMove(squares, player1.icon, player2.icon, i, ai.firstMove);
+    if(!calculateWinner(squares)){
+      // squares[move] = player2.icon;
+      // this.setState({ squares: squares, ai: {on: true, firstMove: false }, is1stPlayer: true });
+      setTimeout(() => {
+        squares[move] = player2.icon;
+        this.setState({ squares: squares, ai: {on: true, firstMove: false }, is1stPlayer: true });
+      }, 200);
+    }
+  }
+
+  //Assigns value for players to player objects in state
   selectPlayer(obj){
     let { id, value } = obj;
     //split value of name, and add '-'
@@ -83,13 +86,14 @@ class Board extends Component {
     let { squares, player1, player2, is1stPlayer } = this.state;
     //Declare status, winner, and isArrFull.
     let status = "Select your side";
-    let sound = this.state.sounds[0];
+    //let sound = this.state.sounds[0];
     const winner = calculateWinner(squares);
     const arrFull = isArrFull(squares);
     // if both players have been selected... check status.
     if(player1.selected && player2.selected)
       if(winner){ //if winner - set status to current player name + wins
          status = (!is1stPlayer ? player1.name : player2.name)+" Wins!";
+         let sound = (!is1stPlayer ? this.state.sounds[0] : this.state.sounds[1]);
          sound.play()
       } else { //set status to current player's turn
          status = (is1stPlayer ? player1.name : player2.name)+"'s Turn";
@@ -98,8 +102,12 @@ class Board extends Component {
         //check if Han and Greedo are playing.
         if(player1.name === "han solo" && player2.name === "greedo"){
            status = "Game is tied, but Han shot first!"
+           let sound = this.state.sounds[2]
+           sound.play()
         } else {
            status = "Game is tied"
+           let sound = this.state.sounds[2]
+           sound.play()
         }
       }
       return status;
@@ -112,21 +120,37 @@ class Board extends Component {
     console.log("STATE: BOARDS", this.state);
   }
 
-  reset(){ //set state back to start, and call reset on child component.
+  resetBoard(){ //reset state of board
+    this.setState({
+      squares: Array(9).fill(null),
+      is1stPlayer: true,
+      ai: {on: this.state.ai.on, firstMove: true}
+    });
+    this.state.sounds.forEach((sound) => {sound.pause()});
+  }
+
+  resetPlayers(){ //reset players, and board runs function resetPlayers in child SelectPlayer
     this.setState({
       squares: Array(9).fill(null),
       player1: {selected: false, icon: null, name: null},
       player2: {selected: false, icon: null, name: null},
       is1stPlayer: true,
+    });
+    this.refs.selectPlayer.resetPlayers();
+    this.state.sounds.forEach((sound) => {sound.pause()});
+  }
+
+  resetAI(){ //reset AI, runs function resetAI in child SelectPlayer
+    this.setState({
       ai: {on: false, firstMove: true}
     });
-    this.refs.selectPlayer.reset();
-    this.state.sounds[0].pause()
+    this.refs.selectPlayer.resetAI();
+    this.state.sounds.forEach((sound) => {sound.pause()});
   }
 
   render() {
     console.log("STATE Boards: ", this.state);
-    let { squares, player1, player2, is1stPlayer, isHidden } = this.state;
+    let { squares, isHidden } = this.state;
     let status = this.checkStatus();
     //create grid of Square child elements
     let grid = squares.map((square, i) => {
@@ -139,7 +163,9 @@ class Board extends Component {
       <div className="status">
           {!isHidden && status}
           {!isHidden && <SelectPlayer ref="selectPlayer" selectPlayer={this.selectPlayer.bind(this)} aiStatus={this.aiStatus.bind(this)}/>}
-          <button onClick={this.reset.bind(this)}>Reset</button>
+          <span><button onClick={this.resetBoard.bind(this)}> Reset Board </button>
+          <button onClick={this.resetPlayers.bind(this)}> Reset Players </button>
+          <button onClick={this.resetAI.bind(this)}> Reset AI </button></span>
         <main>
           {grid}
         </main>
@@ -150,3 +176,9 @@ class Board extends Component {
 }
 
 export default Board;
+
+// let move = aiMove(squares, player1.icon, player2.icon, i, ai.firstMove);
+// squares[move] = player2.icon;
+// if(!calculateWinner(squares)){
+//   this.setState({ squares: squares, ai: {on: true, firstMove: false }, is1stPlayer: true });
+// }
