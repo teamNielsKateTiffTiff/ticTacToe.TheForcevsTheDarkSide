@@ -55,7 +55,7 @@ export const checkMoves = (squares, player, ai) => {
   }
   console.log(moves);
   // Checks if there are moves
-  if(moves.length > 1){
+  if(moves.length > 0){
     console.log("There are moves.. ", moves);
     // LOOP moves to find first move with score of 1
     for(let i = 0; i < moves.length; i++){
