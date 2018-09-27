@@ -11,7 +11,9 @@ import laserblast from './sounds/laserblast.mp3';
 import laserblaster from './sounds/laserblaster.mp3';
 import {calculateWinner} from './logic_functions.js';
 import {isArrFull} from './logic_functions.js';
-import {aiMove} from './logic_functions.js';
+import {aiMoveEasy} from './logic_functions.js';
+import {aiMoveHard} from './logic_functions.js';
+import {aiMoveImpossible} from './impossible.js';
 
 
 class Board extends Component {
@@ -25,7 +27,8 @@ class Board extends Component {
       is1stPlayer: true, //Bool to check which player is current player
       sounds: [new Audio(starwarsthemesong), new Audio(imperialmarch), new Audio(yodalaughing)],
       effects: [new Audio(lightsaberon), new Audio(laserblast), new Audio(laserblaster)],
-      ai: {on: false, firstMove: true} //AI object for ai on off and if it is firstMove
+      ai: {aiValue: "Off", firstMove: true}, //AI object for ai value and if it is firstMove
+      aiPlayer: "O"  //AI value for impossible level minimax in impossible.js
     };
   }
 
@@ -40,33 +43,77 @@ class Board extends Component {
       return;
     }
     //If AI OFF: Assign value to squares for player 1 and player 2 alternating.
-    if(!ai.on){
+    if(ai.aiValue === "Off"){
       squares[i] = this.state.is1stPlayer ? player1.icon : player2.icon;
       let sound = (!is1stPlayer ? this.state.effects[1] : this.state.effects[2]);
       sound.play()
       this.setState({ squares: squares, is1stPlayer: !is1stPlayer })
     }
-    //If AI ON, assigns value to squares for player1 and then runs aiMove
-    if(ai.on){
+    // If aiValue is easy, assigns value to squares for player1 and then runs aiMoveEasy
+    if(ai.aiValue === "Easy"){
       squares[i] = player1.icon;
       this.state.effects[1].play()
       this.setState({squares: squares, is1stPlayer: false});
-      this.aiMove(i);
+      this.aiMoveEasy(i);
+    } 
+    //If aiValue is hard, assigns value to squares for player1 and then runs aiMoveHard
+    if(ai.aiValue === "Hard"){
+      squares[i] = player1.icon;
+      this.state.effects[1].play()
+      this.setState({squares: squares, is1stPlayer: false});
+      this.aiMoveHard(i);
+    }
+    // If aiValue is impossible, assigns value to squares for player1 and then runs aiMoveImpossible
+    if(ai.aiValue === "Impossible"){
+      squares[i] = player1.icon;
+      this.state.effects[1].play()
+      this.setState({squares: squares, is1stPlayer: false});
+      this.aiMoveImpossible(i);
     }
   }
 
-  aiMove(i){
-    let { squares, player1, player2, ai } = this.state;
-    let move = aiMove(squares, player1.icon, player2.icon, i, ai.firstMove);
+  //Sets player2 icon to AI and calls aiMoveEasy on logic_functions.js
+  aiMoveEasy(i) {
+    let { squares, player2 } = this.state;
+    //passes info to aiMoveEasy 
+    let move = aiMoveEasy(squares);
     if(!calculateWinner(squares)){
-      // squares[move] = player2.icon;
-      // this.setState({ squares: squares, ai: {on: true, firstMove: false }, is1stPlayer: true });
       setTimeout(() => {
         squares[move] = player2.icon;
         this.state.effects[2].play()
-        this.setState({ squares: squares, ai: {on: true, firstMove: false }, is1stPlayer: true });
+        this.setState({ squares: squares, ai: {aiValue: "Easy", firstMove: false }, is1stPlayer: true });
       }, 300);
     }
+  }
+
+  //Sets player2 icon to AI and calls aiMoveHard on logic_functions.js
+  aiMoveHard(i){
+    let { squares, player1, player2 } = this.state;
+    //passes info to aiMoveHard 
+    let move = aiMoveHard(squares, player1.icon, player2.icon);
+    if(!calculateWinner(squares)){
+      setTimeout(() => {
+        squares[move] = player2.icon;
+        this.state.effects[2].play()
+        this.setState({ squares: squares, ai: {aiValue: "Hard", firstMove: false }, is1stPlayer: true });
+      }, 300);
+    }
+  }
+
+  //Sets player2 icon to AI and calls aiMoveImpossible on logic_functions.js
+  aiMoveImpossible(i){
+    let { squares, player2, aiPlayer} = this.state;
+    //passes info to aiMoveImpossible 
+    let move = aiMoveImpossible(squares, aiPlayer);
+    if(!calculateWinner(squares)){
+      setTimeout(() => {
+        squares[move] = player2.icon;
+        this.state.effects[2].play()
+        this.setState({ squares: squares, ai: {aiValue: "Impossible", firstMove: false }, is1stPlayer: true });
+      }, 300);
+    }
+    console.log(move);
+    console.log(aiPlayer)
   }
 
   //Assigns value for players to player objects in state
@@ -76,15 +123,15 @@ class Board extends Component {
     let icon = value.split(" ").join("-");
     //create img icon path.
     let img = "./img/"+icon+".png";
-    console.log("in boards.. ", id, value, icon);
+    // console.log("in boards.. ", id, value, icon);
     //setState for players.
     if(id === 'X'){
-      console.log("in id X... ");
+      // console.log("in id X... ");
       this.state.effects[0].play()
       this.setState({ player1: {selected: true, icon: img, name: value} })
     }
     if(id === 'O'){
-      console.log("in id O)... ");
+      // console.log("in id O)... ");
       this.state.effects[0].play()
       this.setState({ player2: {selected: true, icon: img, name: value} })
     }
@@ -121,19 +168,19 @@ class Board extends Component {
       return status;
   }
 
-  //Sets state of ai to true of false
-  aiStatus(status){
-    console.log(status);
+  //Sets state of aiValue to the value assigned from child SelectPlayer
+  aiStatus(aiValue){
+    // console.log(aiValue);
     this.state.effects[0].play()
-    this.setState({ai: {on: status, firstMove: this.state.ai.firstMove}});
-    console.log("STATE: BOARDS", this.state);
+    this.setState({ai: {aiValue: aiValue, firstMove: this.state.ai.firstMove}});
+    // console.log("STATE: BOARDS", this.state);
   }
 
   resetBoard(){ //reset state of board
     this.setState({
       squares: Array(9).fill(null),
       is1stPlayer: true,
-      ai: {on: this.state.ai.on, firstMove: true}
+      ai: {aiValue: this.state.ai.aiValue, firstMove: true}
     });
     this.state.sounds.forEach((sound) => {sound.pause()});
   }
@@ -151,15 +198,16 @@ class Board extends Component {
 
   resetAI(){ //reset AI, runs function resetAI in child SelectPlayer
     this.setState({
-      ai: {on: false, firstMove: true}
-    });
+      ai: {aiValue: "", firstMove: true},
+    }); 
     this.refs.selectPlayer.resetAI();
     this.state.sounds.forEach((sound) => {sound.pause()});
   }
 
   render() {
-    console.log("STATE Boards: ", this.state);
+    // console.log("STATE Boards: ", this.state);
     let { squares, isHidden } = this.state;
+    //assigns value to text and images above the grid
     let status = this.checkStatus();
     //create grid of Square child elements
     let grid = squares.map((square, i) => {
@@ -187,9 +235,3 @@ class Board extends Component {
 }
 
 export default Board;
-
-// let move = aiMove(squares, player1.icon, player2.icon, i, ai.firstMove);
-// squares[move] = player2.icon;
-// if(!calculateWinner(squares)){
-//   this.setState({ squares: squares, ai: {on: true, firstMove: false }, is1stPlayer: true });
-// }

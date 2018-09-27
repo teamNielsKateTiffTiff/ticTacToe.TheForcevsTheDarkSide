@@ -17,7 +17,7 @@ class SelectPlayer extends Component {
       dark_side: [" ", "darth vader", "emperor palpatine", "boba fett", "greedo", "darth maul", "clone trooper", "jabba the hutt", "jango fett", "storm trooper"],
       //AI Bool for on or off, ARRAY for AI options, and a Bool to hide or show AI
       aiOn: false,
-      ai_ops: [" ", "On", "Off"],
+      ai_ops: [" ", "Easy", "Hard", "Impossible", "Off"],
       aiHidden: false
     };
   }
@@ -44,12 +44,20 @@ class SelectPlayer extends Component {
     //console.log(value);
     //Returns true or false to aiStatus in boardJS
     if(value !== ""){
-      if(value === "On"){
-        this.props.aiStatus(true);
+      if(value === "Easy"){
+        this.props.aiStatus("Easy");
+        this.setState({aiOn: true, aiHidden: !this.state.aiHidden});
+      }
+      if(value === "Hard"){
+        this.props.aiStatus("Hard");
+        this.setState({aiOn: true, aiHidden: !this.state.aiHidden});
+      }
+      if(value === "Impossible"){
+        this.props.aiStatus("Impossible");
         this.setState({aiOn: true, aiHidden: !this.state.aiHidden});
       }
       if(value === "Off"){
-        this.props.aiStatus(false);
+        this.props.aiStatus("Off");
         this.setState({aiOn: false, aiHidden: !this.state.aiHidden});
       }
     }
@@ -62,23 +70,19 @@ class SelectPlayer extends Component {
         player2: {id: null, name: null, value: null},
         p1Hidden: false,
         p2Hidden: false,
-        //aiHidden: false
     });
   }
 
   // resets state for AI selection
   resetAI(){
     this.setState({
-        // player1: {id: null, name: null, value: null},
-        // player2: {id: null, name: null, value: null},
-        // p1Hidden: false,
-        // p2Hidden: false,
+        aiOn: false,
         aiHidden: false
     });
   }
 
   render(){
-    console.log("STATE SelectPlayer: ", this.state);
+    // console.log("STATE SelectPlayer: ", this.state);
     //Assign all variables to be used.
     let {player1, player2, p1Hidden, p2Hidden, light_side, dark_side, ai_ops, aiHidden, aiOn } = this.state;
     let player1icon;
@@ -140,23 +144,3 @@ class SelectPlayer extends Component {
 }
 
 export default SelectPlayer;
-
-//<input type="submit" value="Select" /> onSubmit={this.selectPlayer1.bind(this)}
-//<input type="submit" value="Select" /> onSubmit={this.selectPlayer2.bind(this)}
-
-
-  // selectPlayer1(e){
-  //   e.preventDefault();
-  //   if(this.state.player1.value){
-  //     this.props.selectPlayer(this.state.player1);
-  //     this.setState({p1Hidden: !this.state.p1Hidden});
-  //   }
-  // }
-  //
-  // selectPlayer2(e){
-  //   e.preventDefault();
-  //   if(this.state.player2.value){
-  //     this.props.selectPlayer(this.state.player2);
-  //     this.setState({p2Hidden: !this.state.p2Hidden})
-  //   }
-  // }
