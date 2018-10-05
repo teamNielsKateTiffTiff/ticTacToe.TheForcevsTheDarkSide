@@ -28,7 +28,7 @@ class Board extends Component {
       sounds: [new Audio(starwarsthemesong), new Audio(imperialmarch), new Audio(yodalaughing)],
       effects: [new Audio(lightsaberon), new Audio(laserblast), new Audio(laserblaster)],
       ai: {aiValue: "Off", firstMove: true}, //AI object for ai value and if it is firstMove
-      aiPlayer: "O"  //AI value for impossible level minimax in impossible.js
+      // aiPlayer: "O"  //AI value for impossible level minimax in impossible.js
     };
   }
 
@@ -98,13 +98,14 @@ class Board extends Component {
         this.setState({ squares: squares, ai: {aiValue: "Hard", firstMove: false }, is1stPlayer: true });
       }, 300);
     }
+    console.log(move);
   }
 
-  //Sets player2 icon to AI and calls aiMoveImpossible on logic_functions.js
+  //Sets player2 icon to AI and calls aiMoveImpossible on impossible.js
   aiMoveImpossible(i){
-    let { squares, player2, aiPlayer} = this.state;
+    let { squares, player2 } = this.state;
     //passes info to aiMoveImpossible 
-    let move = aiMoveImpossible(squares, aiPlayer);
+    let move = aiMoveImpossible(squares, player2.icon);
     if(!calculateWinner(squares)){
       setTimeout(() => {
         squares[move] = player2.icon;
@@ -113,7 +114,8 @@ class Board extends Component {
       }, 300);
     }
     console.log(move);
-    console.log(aiPlayer)
+    console.log(player2.icon);
+    console.log(squares);
   }
 
   //Assigns value for players to player objects in state
