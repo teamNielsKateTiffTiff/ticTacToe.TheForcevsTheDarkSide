@@ -104,18 +104,32 @@ class Board extends Component {
   //Sets player2 icon to AI and calls aiMoveImpossible on impossible.js
   aiMoveImpossible(i){
     let { squares, player2 } = this.state;
+        console.log("before setState move", move);
+        console.log("before setState player 2 icon",player2.icon);
+        console.log("before setState squares", squares);
+        console.log("before setState squares[move]", squares[move])
+        console.log("before setState state", this.state)
     //passes info to aiMoveImpossible 
     let move = aiMoveImpossible(squares, player2.icon);
     if(!calculateWinner(squares)){
       setTimeout(() => {
+        debugger
         squares[move] = player2.icon;
+        console.log("inside timeout before setState move", move);
+        console.log("inside timeout before setState player 2 icon", player2.icon);
+        console.log("inside timeout before setState squares", squares);
+        console.log("inside timeout before setState squares[move]", squares[move])
+        console.log("inside timeout before setState state", this.state)
         this.state.effects[2].play()
         this.setState({ squares: squares, ai: {aiValue: "Impossible", firstMove: false }, is1stPlayer: true });
+        
       }, 300);
     }
-    console.log(move);
-    console.log(player2.icon);
-    console.log(squares);
+    console.log("post timeout move", move);
+    console.log("post timeout player 2 icon", player2.icon);
+    console.log("post timeout squares", squares);
+    console.log("post timeout squares[move]", squares[move])
+    console.log("post timeout state", this.state)
   }
 
   //Assigns value for players to player objects in state

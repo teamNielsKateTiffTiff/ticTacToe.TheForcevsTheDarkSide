@@ -18,8 +18,9 @@ export const aiMoveImpossible = (origBoard, aiPlayer) => {
 }
 
 //Logic behind AI move when Impossible level is selected
-const minimax = (newBoard, player) => {
+const minimax = (origBoard, player) => {
 	//Finds empty spaces on board
+	var newBoard = origBoard.slice()
 	var availSpots = emptySquares(newBoard);
 
 	console.log("minimax")
