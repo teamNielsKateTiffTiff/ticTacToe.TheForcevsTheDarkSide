@@ -19,8 +19,11 @@ export const aiMoveImpossible = (origBoard, aiPlayer) => {
 
 //Logic behind AI move when Impossible level is selected
 const minimax = (origBoard, player) => {
-	//Finds empty spaces on board
+
+	//Prevents code leak into board
 	var newBoard = origBoard.slice()
+
+	//Finds empty spaces on board
 	var availSpots = emptySquares(newBoard);
 
 	console.log("minimax")
@@ -45,7 +48,7 @@ const minimax = (origBoard, player) => {
 		console.log("checkWin player ", checkWin(newBoard, player))
 		return {score: -10};
 	} else if (checkWin(newBoard, aiPlayer)){
-		console.log("checkWin aiPlayer", checkWin(newBoard,aiPlayer))
+		console.log("checkWin aiPlayer", checkWin(newBoard, aiPlayer))
 		return {score: 10};
 	} else if (availSpots.length === 0) {
 		return {score: 0}; 

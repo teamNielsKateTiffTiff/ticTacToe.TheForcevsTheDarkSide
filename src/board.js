@@ -113,7 +113,6 @@ class Board extends Component {
     let move = aiMoveImpossible(squares, player2.icon);
     if(!calculateWinner(squares)){
       setTimeout(() => {
-        debugger
         squares[move] = player2.icon;
         console.log("inside timeout before setState move", move);
         console.log("inside timeout before setState player 2 icon", player2.icon);
