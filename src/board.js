@@ -21,7 +21,7 @@ class Board extends Component {
     super(props)
     this.state = {
 
-      squares: Array(9).fill(null), //generate Array length 9 of null values.
+      squares: [0,1,2,3,4,5,6,7,8], //generate Array length  of 9 values.
       player1: {selected: false, icon: null, name: null}, //object to store player1 data
       player2: {selected: false, icon: null, name: null}, //object to store player2 data.
       is1stPlayer: true, //Bool to check which player is current player
@@ -39,7 +39,7 @@ class Board extends Component {
       return
     }
     //End and return nothing if a player has won, or current square has value
-    if(calculateWinner(squares) || squares[i]){
+    if(calculateWinner(squares) || typeof squares[i] !== 'number'){
       return;
     }
     //If AI OFF: Assign value to squares for player 1 and player 2 alternating.
@@ -192,8 +192,13 @@ class Board extends Component {
   }
 
   resetBoard(){ //reset state of board
+    var newSquares = [];
+    for (let i = 0; i < 9; i++) {
+      newSquares.push(i);
+    }
+
     this.setState({
-      squares: Array(9).fill(null),
+      squares: newSquares,
       is1stPlayer: true,
       ai: {aiValue: this.state.ai.aiValue, firstMove: true}
     });
@@ -201,8 +206,12 @@ class Board extends Component {
   }
 
   resetPlayers(){ //reset players, and board runs function resetPlayers in child SelectPlayer
+    var newSquares = [];
+    for (let i = 0; i < 9; i++) {
+      newSquares.push(i);
+    }
     this.setState({
-      squares: Array(9).fill(null),
+      squares: newSquares,
       player1: {selected: false, icon: null, name: null},
       player2: {selected: false, icon: null, name: null},
       is1stPlayer: true,

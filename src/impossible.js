@@ -11,21 +11,22 @@ const winCombos = [
 	[2,4,6]
 ];
 
+var startDebugging = false;
 
 //Determines AI move when Impossible level is selected
 export const aiMoveImpossible = (origBoard, aiPlayer) => {
-	return minimax(origBoard, aiPlayer).index;
+		//Prevents code leak into board
+		var newBoard = origBoard.slice()
+	return minimax(newBoard, aiPlayer).index;
 }
 
 //Logic behind AI move when Impossible level is selected
-const minimax = (origBoard, player) => {
+const minimax = (newBoard, player) => {
 
-	//Prevents code leak into board
-	var newBoard = origBoard.slice()
-
+	
 	//Finds empty spaces on board
 	var availSpots = emptySquares(newBoard);
-
+	
 	console.log("minimax")
 	console.log(availSpots)
 
@@ -35,8 +36,10 @@ const minimax = (origBoard, player) => {
 	for (let i = 0; i < aiPlayer.length; i++) {
 		if (player === aiPlayer[i] || player === aiPlayer) {
 			isaiPlayer = true;
+			player = aiPlayer[i]
 		} else if (player === huPlayer[i] || player === huPlayer) {
 			isaiPlayer = false;
+			player = huPlayer[i]
 		}
 	}
 
@@ -46,11 +49,15 @@ const minimax = (origBoard, player) => {
 	//Assigns a score to the winning move based on which player has won
 	if(checkWin(newBoard, player)) {
 		console.log("checkWin player ", checkWin(newBoard, player))
+		debugger
 		return {score: -10};
 	} else if (checkWin(newBoard, aiPlayer)){
 		console.log("checkWin aiPlayer", checkWin(newBoard, aiPlayer))
+		debugger
 		return {score: 10};
 	} else if (availSpots.length === 0) {
+		debugger
+		startDebugging = true;
 		return {score: 0}; 
 	}
 
@@ -58,6 +65,10 @@ const minimax = (origBoard, player) => {
 	
 	//Establishes the moves array
 	var moves = [];
+
+	if (startDebugging){
+		debugger;
+	}
 
 	//Assigns a score to each move and pushes it to the moves array
 	for (var i = 0; i < availSpots.length; i++) {
@@ -74,7 +85,7 @@ const minimax = (origBoard, player) => {
 			var result = minimax(newBoard, aiPlayer);
 			move.score = result.score;
 		}
-		move.index = availSpots[i];
+		newBoard[availSpots[i]] = move.index;
 
 		// console.log("inside moves" + moves)
 		console.log("inside move", move)
@@ -134,7 +145,7 @@ function checkWin(board, player) {
 function emptySquares(aBoard) { 
 	let emptySpots = [], i;
 	for (let i = 0; i < aBoard.length; i++)
-		if (aBoard[i] === null)
+		if (typeof aBoard[i] === 'number')
 			emptySpots.push(i)
 	return emptySpots;
 }

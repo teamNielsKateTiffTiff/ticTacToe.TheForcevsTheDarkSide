@@ -11,11 +11,11 @@ export const calculateWinner = (squares) => { //Takes in squares array, and eval
   return;
 }
 
-// Check if the arr of squares has no null values:
+// Check if the arr of squares has no empty values:
 export const isArrFull = (squares) => {
   let checkNotNull = [];
   for(let i = 0; i < squares.length; i++){
-    if(squares[i] !== null){
+    if( typeof squares[i] !== 'number'){
       checkNotNull.push(squares[i]);
     }
   }
@@ -30,7 +30,7 @@ export const isArrFull = (squares) => {
 export const emptySpaces = (squares) => {
   let emptySpaces = [];
   for(let i = 0; i < squares.length; i++){
-    if(squares[i] === null){
+    if(typeof squares[i] !== 'number'){
       emptySpaces.push(i);
     }
    }
@@ -85,7 +85,7 @@ export const checkMoves = (squares, player, ai) => {
   let moves = [];
   for(let i = 0; i < checks.length; i++){
     const [a,b,c] = checks[i];
-    //Checks for combinations of 2 AI values and a null value and pushes index of null.
+    //Checks for combinations of 2 AI values and a number value and pushes index of number.
     if(squares[a] && squares[a] === squares[b] && !squares[c]){
       squares[a] === ai ? moves.push({idx: c, score: 1}) : moves.push({idx: c, score: 0});
     }
